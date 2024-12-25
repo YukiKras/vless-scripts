@@ -109,6 +109,8 @@ KEY_PATH="/etc/letsencrypt/live/$DOMAIN/privkey.pem"
 echo "Сертификат и ключ расположены в следующих путях:"
 echo "Сертификат: $CERT_PATH"
 echo "Ключ: $KEY_PATH"
+echo "В качестве Dest укажите: 127.0.0.1:8443"
+echo "В качестве SNI укажите: $DOMAIN"
 
 # Удаление временной директории
 rm -rf "$TEMP_DIR"
