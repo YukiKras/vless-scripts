@@ -48,4 +48,10 @@ if [ -z "$public_ip" ]; then
 fi
 
 # Выводим сообщение пользователю
+echo ""
+echo ""
+echo ""
 echo "Ваша панель Marzban доступна по ссылке: http://$public_ip:8888/dashboard"
+echo ""
+echo ""
+echo ""
