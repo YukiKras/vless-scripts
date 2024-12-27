@@ -9,10 +9,34 @@ fi
 # Устанавливаем nginx
 apt update && apt install -y nginx
 
+# Получаем публичный IP сервера
+public_ip=$(curl -s ifconfig.me)
+if [ -z "$public_ip" ]; then
+  echo "Не удалось определить публичный IP-адрес. Проверьте подключение к интернету."
+  exit 1
+fi
+
+# Генерация самоподписного сертификата
+mkdir /etc/nginx/ssl
+openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+  -keyout "/etc/nginx/ssl/$public_ip.key.pem" \
+  -out "/etc/nginx/ssl/$public_ip.pem" \
+  -subj "/C=RU/ST=Moscow/L=Moscow/O=Example Company/OU=IT Department/CN=$public_ip"
+
+
 # Создаем конфигурацию для reverse proxy
 cat > /etc/nginx/sites-available/reverse-proxy.conf <<EOF
 server {
-    listen 8888;
+    listen 8888 ssl;
+    server_name $public_ip;
+
+    # Путь к SSL-сертификатам
+    ssl_certificate /etc/nginx/ssl/$public_ip.pem;
+    ssl_certificate_key /etc/nginx/ssl/$public_ip.key.pem;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers HIGH:!aNULL:!MD5;
 
     location ~* /(sub|dashboard|statics|api|docs|redoc|openapi.json) {
         proxy_redirect off;
@@ -40,18 +64,11 @@ fi
 # Перезапускаем nginx
 systemctl restart nginx
 
-# Получаем публичный IP сервера
-public_ip=$(curl -s ifconfig.me)
-if [ -z "$public_ip" ]; then
-  echo "Не удалось определить публичный IP-адрес. Проверьте подключение к интернету."
-  exit 1
-fi
-
 # Выводим сообщение пользователю
 echo ""
 echo ""
 echo ""
-echo "Ваша панель Marzban доступна по ссылке: http://$public_ip:8888/dashboard"
+echo "Ваша панель Marzban доступна по ссылке: https://$public_ip:8888/dashboard"
 echo ""
 echo ""
 echo ""
