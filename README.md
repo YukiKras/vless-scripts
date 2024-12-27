@@ -10,8 +10,8 @@
 bash <(curl -Ls https://raw.githubusercontent.com/YukiKras/vless-scripts/refs/heads/main/fakesite.sh)
 ```
 
-# Возвращение http в Marzban
-Возвращает возможность пользоваться Marzban из вне как раньше без SSL/TLS сертификата и SSH туннеля, устанавливая reverse proxy в nginx до него на 8888 порт по http.
+# Возвращение https в Marzban
+Возвращает возможность пользоваться Marzban из вне как раньше без SSH туннеля, устанавливая reverse proxy в nginx до него на 8888 порт по https и самоподписным сертификатом.
 ## Скачать и запустить
 ```
 bash <(curl -Ls https://raw.githubusercontent.com/YukiKras/vless-scripts/refs/heads/main/marzbanfix.sh)
