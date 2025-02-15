@@ -44,13 +44,13 @@ else
 fi
 
 # Проверка заняты ли 443 и 8443 порты
-local port=$1
-    if ss -tuln | grep -q ":$port"; then
-        echo "Порт $port занят, пожалуйста освободите его чтобы начать установку сайта."
-        exit 1
-    else
-        echo "Порт $port свободен."
-    fi
+#local port=$1
+#    if ss -tuln | grep -q ":$port"; then
+#        echo "Порт $port занят, пожалуйста освободите его чтобы начать установку сайта."
+#        exit 1
+#    else
+#        echo "Порт $port свободен."
+#    fi
     
 check_port 443
 check_port 8443
