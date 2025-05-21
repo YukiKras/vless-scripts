@@ -49,36 +49,101 @@ if [[ "$USE_LETSENCRYPT" =~ ^[Yy]$ ]]; then
     fi
 
     echo "Сертификат успешно получен."
+    # Создаем конфигурацию для reverse proxy
+cat > /etc/nginx/sites-available/marzban-reverse-proxy.conf <<EOF
+server {
+    listen $MPORT ssl;
+    server_name $DOMAIN;
+
+    # Путь к SSL-сертификатам
+    ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    location ~* /(sub|dashboard|statics|api|docs|redoc|openapi.json) {
+        proxy_redirect off;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+    }
+}
+EOF
+
+# Активируем новую конфигурацию
+ln -s /etc/nginx/sites-available/marzban-reverse-proxy.conf /etc/nginx/sites-enabled/marzban-reverse-proxy.conf
+
+# Проверяем конфигурацию nginx
+nginx -t
+if [ $? -ne 0 ]; then
+  echo "Ошибка в конфигурации nginx. Проверьте файл /etc/nginx/sites-available/marzban-reverse-proxy.conf"
+  exit 1
+fi
+systemctl restart nginx
 else
-    echo "Генерация самоподписанного сертификата..."
+    # Устанавливаем nginx
+apt update && apt install -y nginx
 
-    DOMAIN=$(curl -s ifconfig.me)
-    if [ -z "$DOMAIN" ]; then
-      echo "Не удалось определить публичный IP-адрес. Проверьте подключение к интернету."
-      exit 1
-    fi
-
-    cert_file="$ssl_dir/$DOMAIN.pem"
-    key_file="$ssl_dir/$DOMAIN.key.pem"
-
-    openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
-      -keyout "$key_file" \
-      -out "$cert_file" \
-      -subj "/C=RU/ST=Moscow/L=Moscow/O=Example Company/OU=IT Department/CN=$DOMAIN"
+# Получаем публичный IP сервера
+public_ip=$(curl -s ifconfig.me)
+if [ -z "$public_ip" ]; then
+  echo "Не удалось определить публичный IP-адрес. Проверьте подключение к интернету."
+  exit 1
 fi
 
-env_file="/opt/marzban/.env"
+# Генерация самоподписного сертификата
+mkdir /etc/nginx/ssl
+openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+  -keyout "/etc/nginx/ssl/$public_ip.key.pem" \
+  -out "/etc/nginx/ssl/$public_ip.pem" \
+  -subj "/C=RU/ST=Moscow/L=Moscow/O=Example Company/OU=IT Department/CN=$public_ip"
 
-touch "$env_file"
 
-sed -i '/^UVICORN_SSL_CERTFILE = /d' "$env_file"
-sed -i '/^UVICORN_SSL_KEYFILE = /d' "$env_file"
+# Создаем конфигурацию для reverse proxy
+cat > /etc/nginx/sites-available/marzban-reverse-proxy.conf <<EOF
+server {
+    listen $MPORT ssl;
+    server_name $public_ip;
 
-echo "UVICORN_SSL_CERTFILE = \"$cert_file\"" >> "$env_file"
-echo "UVICORN_SSL_KEYFILE = \"$key_file\"" >> "$env_file"
+    # Путь к SSL-сертификатам
+    ssl_certificate /etc/nginx/ssl/$public_ip.pem;
+    ssl_certificate_key /etc/nginx/ssl/$public_ip.key.pem;
 
-sed -i '/^UVICORN_PORT = /d' "$env_file"
-echo "UVICORN_PORT = $MPORT" >> "$env_file"
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    location ~* /(sub|dashboard|statics|api|docs|redoc|openapi.json) {
+        proxy_redirect off;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+    }
+}
+EOF
+
+# Активируем новую конфигурацию
+ln -s /etc/nginx/sites-available/marzban-reverse-proxy.conf /etc/nginx/sites-enabled/marzban-reverse-proxy.conf
+
+# Проверяем конфигурацию nginx
+nginx -t
+if [ $? -ne 0 ]; then
+  echo "Ошибка в конфигурации nginx. Проверьте файл /etc/nginx/sites-available/marzban-reverse-proxy.conf"
+  exit 1
+fi
+
+systemctl restart nginx
+fi
 
 if [[ "$INSTALL_TEMPLATE" =~ ^[Yy]$ ]]; then
     echo "Устанавливаю кастомный шаблон..."

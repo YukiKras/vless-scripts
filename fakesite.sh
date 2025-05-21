@@ -72,7 +72,7 @@ cp -r "$SITE_DIR"/* /var/www/html/
 certbot --nginx -d "$DOMAIN" --agree-tos -m "admin@$DOMAIN" --non-interactive
 
 # Настройка конфигурации Nginx
-cat << EOF > /etc/nginx/sites-available/default
+cat > /etc/nginx/sites-enabled/sni.conf <<EOF
 server {
     listen 80;
     server_name $DOMAIN;
