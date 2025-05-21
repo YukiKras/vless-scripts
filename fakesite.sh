@@ -13,6 +13,8 @@ if [[ -z "$DOMAIN" ]]; then
     exit 1
 fi
 
+read -p "Введите внутренний SNI Self порт: " SPORT
+
 # Получение внешнего IP сервера
 external_ip=$(curl -s ifconfig.me)
 
@@ -83,7 +85,7 @@ server {
 }
 
 server {
-    listen 127.0.0.1:8443 ssl http2;
+    listen 127.0.0.1:$SPORT ssl http2;
 
     server_name $DOMAIN;
 
@@ -120,7 +122,7 @@ KEY_PATH="/etc/letsencrypt/live/$DOMAIN/privkey.pem"
 echo "Сертификат и ключ расположены в следующих путях:"
 echo "Сертификат: $CERT_PATH"
 echo "Ключ: $KEY_PATH"
-echo "В качестве Dest укажите: 127.0.0.1:8443"
+echo "В качестве Dest укажите: 127.0.0.1:$SPORT"
 echo "В качестве SNI укажите: $DOMAIN"
 
 # Удаление временной директории
