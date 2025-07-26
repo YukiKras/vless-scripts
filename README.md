@@ -1,6 +1,18 @@
 # vless-scripts
 Различные скрипты для VPN на основе протокола Vless
 
+# Полная авто-установка 3x-ui панели
+Устанавливает и настраивает 3x-ui полностью автоматически
+## Скачать и запустить
+С настройками по умолчанию:
+```
+bash <(curl -Ls https://raw.githubusercontent.com/YukiKras/vless-scripts/refs/heads/main/3xinstall.sh)
+```
+Расширенную, с возможностью предустановить свои настройки:
+```
+bash <(curl -Ls https://raw.githubusercontent.com/YukiKras/vless-scripts/refs/heads/main/3xinstall.sh -extend)
+```
+
 # Установка SNI сайта
 Скачивает и устанавливает рандомный шаблонный сайт отсюда: https://github.com/learning-zone/website-templates
 
