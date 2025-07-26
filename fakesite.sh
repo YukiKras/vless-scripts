@@ -54,8 +54,8 @@ fi
 #        echo "Порт $port свободен."
 #    fi
     
-check_port 443
-check_port 8443
+#check_port 443
+#check_port 8443
 
 # Установка nginx и certbot
 apt update && apt install -y nginx certbot python3-certbot-nginx git
@@ -112,6 +112,8 @@ server {
     }
 }
 EOF
+
+rm /etc/nginx/sites-enabled/default
 
 # Перезапуск Nginx
 nginx -t && systemctl reload nginx
