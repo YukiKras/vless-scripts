@@ -13,7 +13,8 @@ if [[ -z "$DOMAIN" ]]; then
     exit 1
 fi
 
-read -p "Введите внутренний SNI Self порт: " SPORT
+read -p "Введите внутренний SNI Self порт (Enter для порта по умолчанию - 9000): " SPORT
+SPORT=${SPORT:-9000}
 
 # Получение внешнего IP сервера
 external_ip=$(curl -s ifconfig.me)
@@ -31,7 +32,7 @@ domain_ip=$(dig +short A "$DOMAIN")
 
 # Проверка, что A-запись существует
 if [[ -z "$domain_ip" ]]; then
-  echo "Не удалось получить A-запись для домена $DOMAIN. Убедитесь, что домен существует."
+  echo "Не удалось получить A-запись для домена $DOMAIN. Убедитесь, что домен существует, подробнее что делать вы можете ознакомиться тут: https://wiki.yukikras.net/ru/selfsni"
   exit 1
 fi
 
@@ -41,21 +42,24 @@ echo "A-запись домена $DOMAIN указывает на: $domain_ip"
 if [[ "$domain_ip" == "$external_ip" ]]; then
   echo "A-запись домена $DOMAIN соответствует внешнему IP сервера."
 else
-  echo "A-запись домена $DOMAIN не соответствует внешнему IP сервера."
+  echo "A-запись домена $DOMAIN не соответствует внешнему IP сервера, подробнее что делать вы можете ознакомиться тут: https://wiki.yukikras.net/ru/selfsni"
   exit 1
 fi
 
-# Проверка заняты ли 443 и 8443 порты
-#local port=$1
-#    if ss -tuln | grep -q ":$port"; then
-#        echo "Порт $port занят, пожалуйста освободите его чтобы начать установку сайта."
-#        exit 1
-#    else
-#        echo "Порт $port свободен."
-#    fi
-    
-#check_port 443
-#check_port 8443
+# Проверка, занят ли порт
+if ss -tuln | grep -q ":443 "; then
+    echo "Порт 443 занят, пожалуйста освободите порт, подробнее что делать вы можете ознакомиться тут: https://wiki.yukikras.net/ru/selfsni"
+    exit 1
+else
+    echo "Порт 443 свободен."
+fi
+
+if ss -tuln | grep -q ":80 "; then
+    echo "Порт 80 занят, пожалуйста освободите порт, подробнее что делать вы можете ознакомиться тут: https://wiki.yukikras.net/ru/selfsni"
+    exit 1
+else
+    echo "Порт 80 свободен."
+fi
 
 # Установка nginx и certbot
 apt update && apt install -y nginx certbot python3-certbot-nginx git
@@ -121,9 +125,14 @@ nginx -t && systemctl reload nginx
 # Показ путей сертификатов
 CERT_PATH="/etc/letsencrypt/live/$DOMAIN/fullchain.pem"
 KEY_PATH="/etc/letsencrypt/live/$DOMAIN/privkey.pem"
+echo ""
+echo ""
+echo ""
+echo ""
 echo "Сертификат и ключ расположены в следующих путях:"
 echo "Сертификат: $CERT_PATH"
 echo "Ключ: $KEY_PATH"
+echo ""
 echo "В качестве Dest укажите: 127.0.0.1:$SPORT"
 echo "В качестве SNI укажите: $DOMAIN"
 

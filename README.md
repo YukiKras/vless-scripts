@@ -1,41 +1,54 @@
 # vless-scripts
+
 Различные скрипты для VPN на основе протокола Vless
 
-# Полная авто-установка 3x-ui панели
-Устанавливает и настраивает 3x-ui полностью автоматически
+# Полная авто-установка 3x-ui панели (БЕТА)
+
+Устанавливает и настраивает 3x-ui полностью автоматически, находится на разработке и может выполняться с ошибками
+
 ## Скачать и запустить
+
 С настройками по умолчанию:
-```
+
+``` bash
 bash <(curl -Ls https://raw.githubusercontent.com/YukiKras/vless-scripts/refs/heads/main/3xinstall.sh)
 ```
-Расширенную, с возможностью предустановить свои настройки:
-```
-bash <(curl -Ls https://raw.githubusercontent.com/YukiKras/vless-scripts/refs/heads/main/3xinstall.sh -extend)
+
+Расширенную, с возможностью предустановить свои настройки и установки SelfSNI:
+
+``` bash
+bash <(curl -Ls https://raw.githubusercontent.com/YukiKras/vless-scripts/refs/heads/main/3xinstall.sh) --extend
 ```
 
 # Установка SNI сайта
-Скачивает и устанавливает рандомный шаблонный сайт отсюда: https://github.com/learning-zone/website-templates
+
+Скачивает и устанавливает рандомный шаблонный сайт отсюда: <https://github.com/learning-zone/website-templates>
 
 И получает на него Let's Encrypt сертификат и настраивает nginx под использовании сайта в качестве SNI для Vless Reality
+
 ## Скачать и запустить
-```
+
+``` bash
 bash <(curl -Ls https://raw.githubusercontent.com/YukiKras/vless-scripts/refs/heads/main/fakesite.sh)
 ```
 
 # Возвращение https в Marzban
+
 Возвращает возможность пользоваться Marzban из вне как раньше без SSH туннеля, и позволяет опционаольно установить заглушку логина ISPManager.
+
 ## Скачать и запустить
-```
+
+``` bash
 bash <(curl -Ls https://raw.githubusercontent.com/YukiKras/vless-scripts/refs/heads/main/marzbanfix.sh)
 ```
 
-# Заглушка логина в ISPManager:
+# Заглушка логина в ISPManager
 
 ## Installation Guide for Marzban Home Template
 
 This guide provides step-by-step instructions for setting up the Marzban home template on a Debian-based system.
 
-### Before you begin, ensure you have the following:
+### Before you begin, ensure you have the following
 
 - A Debian-based operating system.
 - `wget` installed. If not, you can install it using the following commands:
@@ -75,12 +88,14 @@ nano /opt/marzban/.env
 ```
 
 Set CUSTOM_TEMPLATES_DIRECTORY to "/var/lib/marzban/templates/"
-```
+
+``` plaintext
 CUSTOM_TEMPLATES_DIRECTORY="/var/lib/marzban/templates/"
 ```
 
 Set HOME_PAGE_TEMPLATE to "home/index.html"
-```
+
+``` plaintext
 HOME_PAGE_TEMPLATE="home/index.html"
 ```
 
