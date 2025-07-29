@@ -42,6 +42,14 @@ bash <(curl -Ls https://raw.githubusercontent.com/YukiKras/vless-scripts/refs/he
 bash <(curl -Ls https://raw.githubusercontent.com/YukiKras/vless-scripts/refs/heads/main/marzbanfix.sh)
 ```
 
+# Автофикс порта 3x-ui панели
+
+Автоматически настраивает 3x-ui панель на работу с 8080 портом, запустить скрипт можно с помощью следующей команды:
+
+``` bash
+bash <(curl -Ls https://raw.githubusercontent.com/YukiKras/vless-scripts/refs/heads/main/3xuiportfix.sh)
+```
+
 # Заглушка логина в ISPManager
 
 ## Installation Guide for Marzban Home Template
