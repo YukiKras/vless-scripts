@@ -14,6 +14,8 @@ if command -v ufw >/dev/null 2>&1; then
   if [[ -n "$UFW_STATUS" ]]; then
     echo "UFW активен. Добавляем правило для порта 8080..."
     ufw allow 8080/tcp >/dev/null
+    ufw allow 443/tcp >/dev/null
+    ufw allow 8443/tcp >/dev/null
     echo "Перезапуск UFW..."
     ufw reload >/dev/null
   else
