@@ -11,10 +11,10 @@ green='\033[0;32m'
 yellow='\033[0;33m'
 plain='\033[0m'
 
-# === Порт панели: по умолчанию 8443, а при аргументе extend — ручной выбор ===
+# === Порт панели: по умолчанию 8080, а при аргументе extend — ручной выбор ===
 if [[ "$1" == "--extend" ]]; then
-    read -rp $'\033[0;33mВведите порт для панели (Enter для 8443): \033[0m' USER_PORT
-    PORT=${USER_PORT:-8443}
+    read -rp $'\033[0;33mВведите порт для панели (Enter для 8080): \033[0m' USER_PORT
+    PORT=${USER_PORT:-8080}
 
     # === Вопрос о SelfSNI ===
     echo -e "\n${yellow}Хотите установить SelfSNI (поддельный сайт для маскировки)?${plain}"
@@ -76,6 +76,7 @@ glibc_version=$(ldd --version | head -n1 | awk '{print $NF}')
 required_version="2.32"
 if [[ "$(printf '%s\n' "$required_version" "$glibc_version" | sort -V | head -n1)" != "$required_version" ]]; then
     echo -e "${red}GLIBC слишком старая ($glibc_version), требуется >= 2.32.${plain}" >&3
+    echo -e "${red}Вам необходимо установить более свежую ОС">&3
     exit 1
 fi
 
@@ -83,7 +84,7 @@ fi
 case "${release}" in
     ubuntu | debian | armbian)
         apt-get update > /dev/null 2>&1
-        apt-get install -y -q wget curl tar tzdata sqlite3 > /dev/null 2>&1
+        apt-get install -y -q wget curl tar tzdata sqlite3 jq > /dev/null 2>&1
         ;;
     centos | rhel | almalinux | rocky | ol)
         yum -y update > /dev/null 2>&1
@@ -103,7 +104,7 @@ case "${release}" in
         ;;
     *)
         apt-get update > /dev/null 2>&1
-        apt-get install -y wget curl tar tzdata sqlite3 > /dev/null 2>&1
+        apt-get install -y wget curl tar tzdata sqlite3 jq > /dev/null 2>&1
         ;;
 esac
 
@@ -246,49 +247,45 @@ if echo "$ADD_RESULT" | grep -q '"success":true'; then
     VLESS_LINK="vless://${UUID}@${SERVER_IP}:443?type=tcp&security=reality&encryption=none&flow=xtls-rprx-vision&sni=teamdocs.su&fp=chrome&pbk=${PUBLIC_KEY}&sid=${SHORT_ID}&spx=%2F#${EMAIL}"
 
     echo -e "\n\033[0;32mVLESS Reality успешно создан!\033[0m" >&3
-    echo -e "===============================================" >&3
     echo -e "\033[1;36mВаш VPN ключ, его можно использовать сразу на нескольких устройствах:\033[0m" >&3
     echo -e ""
     echo -e "${VLESS_LINK}" >&3
     echo -e ""
-    echo -e "===============================================" >&3
 
     {
     echo "Ваш VPN ключ, его можно использовать сразу на нескольких устройствах:"
     echo ""
     echo "$VLESS_LINK"
     echo ""
-    echo "==============================================="
-    } >> /root/3xui.txt
+    } >> /root/3x-ui.txt
 else
-    echo -e "${red}Ошибка при добавлении инбаунда через API (cookie):${plain}" >&3
+    echo -e "${red}Ошибка при добавлении инбаунда через API:${plain}" >&3
     echo "$ADD_RESULT" >&3
 fi
 
 # === Общая финальная информация (всегда выводится) ===
 SERVER_IP=${SERVER_IP:-$(curl -s --max-time 3 https://api.ipify.org || curl -s --max-time 3 https://4.ident.me)}
 
-echo -e "\n\033[1;32mУстановка панели управления завершена!\033[0m" >&3
-echo -e "===============================================" >&3
+echo -e "\n\033[1;32mПанель управления 3X-UI (https://github.com/MHSanaei/3x-ui) доступна по следующим данным:\033[0m" >&3
 echo -e "Адрес панели: \033[1;36mhttp://${SERVER_IP}:${PORT}/${WEBPATH}\033[0m" >&3
 echo -e "Логин:        \033[1;33m${USERNAME}\033[0m" >&3
 echo -e "Пароль:       \033[1;33m${PASSWORD}\033[0m" >&3
-echo -e "===============================================" >&3
 
 echo -e "\nИнструкции по настройке VPN приложений вы сможете найти здесь:" >&3
 echo -e "\033[1;34mhttps://wiki.yukikras.net/ru/nastroikavpn\033[0m" >&3
 
-echo -e "\nВсе данные сохранены в файл: \033[1;36m/root/3xui.txt\033[0m" >&3
+echo -e "\nВсе данные сохранены в файл: \033[1;36m/root/3x-ui.txt\033[0m" >&3
 echo -e "Для повторного просмотра информации используйте команду:" >&3
 echo -e "" >&3
-echo -e "\033[0;36mcat /root/3xui.txt\033[0m" >&3
+echo -e "\033[0;36mcat /root/3x-ui.txt\033[0m" >&3
 echo -e "" >&3
 
 {
-  echo "Адрес панели: http://${SERVER_IP}:${PORT}/${WEBPATH}"
-  echo "Логин:        ${USERNAME}"
-  echo "Пароль:       ${PASSWORD}"
-  echo "==============================================="
-  echo "Инструкции по настройке VPN:"
+  echo "Панель управления 3X-UI (https://github.com/MHSanaei/3x-ui) доступна по следующим данным:"
+  echo "Адрес панели - http://${SERVER_IP}:${PORT}/${WEBPATH}"
+  echo "Логин:         ${USERNAME}"
+  echo "Пароль:        ${PASSWORD}"
+  echo ""
+  echo "Инструкции по настройке VPN приложений:"
   echo "https://wiki.yukikras.net/ru/nastroikavpn"
-} >> /root/3xui.txt
+} >> /root/3x-ui.txt

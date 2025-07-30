@@ -48,9 +48,18 @@ if [[ -z "$ACCESS_URL" ]]; then
   echo "Не удалось получить Access URL панели."
   exit 1
 fi
+
 clear
 echo
 echo "Панель x-ui теперь доступна по следующей ссылке:"
 echo "$ACCESS_URL"
 echo
 echo "Используйте предыдущие логин и пароль для входа."
+
+# Обновление ссылки в /root/3x-ui.txt при наличии файла
+if [[ -f /root/3x-ui.txt ]]; then
+  echo
+  echo "Обнаружен файл /root/3x-ui.txt — обновляем ссылку на панель..."
+  sed -i -E "s#(URL - |Ссылка - |Адрес панели -)[^\s]+#\1$ACCESS_URL#g" /root/3x-ui.txt
+  echo "Ссылка успешно обновлена в /root/3x-ui.txt"
+fi
