@@ -1,6 +1,27 @@
 #!/bin/bash
 
-DB="/etc/x-ui/x-ui.db"
+# Проверяем наличие команды x-ui
+if command -v x-ui &> /dev/null; then
+    echo "Обнаружена установленная панель x-ui."
+
+    # Запрос у пользователя на переустановку
+    read -p "Вы хотите переустановить x-ui? [y/N]: " confirm
+    confirm=${confirm,,}  # перевод в нижний регистр
+
+    if [[ "$confirm" != "y" && "$confirm" != "yes" ]]; then
+        echo "Отмена. Скрипт завершает работу."
+        exit 1
+    fi
+
+    echo "Удаление x-ui..."
+    # Тихое удаление x-ui (если установлен через официальный скрипт)
+    /usr/local/x-ui/x-ui uninstall -y &>/dev/null || true
+    rm -rf /usr/local/x-ui /etc/x-ui /usr/bin/x-ui /etc/systemd/system/x-ui.service
+    systemctl daemon-reexec
+    systemctl daemon-reload
+    echo "x-ui успешно удалена. Продолжаем выполнение скрипта..."
+fi
+
 # Вывод всех команд кроме диалога — в лог
 exec 3>&1  # Сохраняем stdout для сообщений пользователю
 LOG_FILE="/var/log/3x-ui_install_log.txt"
@@ -26,7 +47,7 @@ if [[ "$1" == "--extend" ]]; then
         echo -e "${yellow}Установка SelfSNI пропущена.${plain}" >&3
     fi
 else
-    PORT=8443
+    PORT=8080
     echo -e "${yellow}Порт панели не указан, используется по умолчанию: ${PORT}${plain}" >&3
 fi
 
@@ -251,11 +272,15 @@ if echo "$ADD_RESULT" | grep -q '"success":true'; then
     echo -e ""
     echo -e "${VLESS_LINK}" >&3
     echo -e ""
+    echo -e "С инструкцией по созданию дополнительных Vless ключей вы можете ознакомиться тут: https://wiki.yukikras.net/ru/razvertyvanie-proksi-protokola-vless-s-pomoshyu-3x-ui#%D0%BA%D0%B0%D0%BA-%D0%B4%D0%BE%D0%B1%D0%B0%D0%B2%D0%BB%D1%8F%D1%82%D1%8C-%D0%BD%D0%BE%D0%B2%D1%8B%D1%85-%D0%BA%D0%BB%D0%B8%D0%B5%D0%BD%D1%82%D0%BE%D0%B2"
+    echo -e ""
 
     {
     echo "Ваш VPN ключ, его можно использовать сразу на нескольких устройствах:"
     echo ""
     echo "$VLESS_LINK"
+    echo ""
+    echo "С инструкцией по созданию дополнительных Vless ключей вы можете ознакомиться тут: https://wiki.yukikras.net/ru/razvertyvanie-proksi-protokola-vless-s-pomoshyu-3x-ui#%D0%BA%D0%B0%D0%BA-%D0%B4%D0%BE%D0%B1%D0%B0%D0%B2%D0%BB%D1%8F%D1%82%D1%8C-%D0%BD%D0%BE%D0%B2%D1%8B%D1%85-%D0%BA%D0%BB%D0%B8%D0%B5%D0%BD%D1%82%D0%BE%D0%B2"
     echo ""
     } >> /root/3x-ui.txt
 else

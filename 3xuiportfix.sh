@@ -38,11 +38,7 @@ fi
 
 # Извлечение текущего Access URL через пункт 10
 ACCESS_URL=$(
-  ( 
-    sleep 1
-    echo 10       # Show current panel settings
-    sleep 2
-  ) | x-ui 2>/dev/null | grep -i "Access URL" | awk -F': ' '{print $2}'
+    x-ui settings 2>/dev/null | grep -i "Access URL" | awk -F': ' '{print $2}'
 )
 
 # Проверка, удалось ли получить ссылку
