@@ -105,27 +105,27 @@ fi
 case "${release}" in
     ubuntu | debian | armbian)
         apt-get update > /dev/null 2>&1
-        apt-get install -y -q wget curl tar tzdata sqlite3 jq > /dev/null 2>&1
+        apt-get install -y -q wget curl tar tzdata jq xxd > /dev/null 2>&1
         ;;
     centos | rhel | almalinux | rocky | ol)
         yum -y update > /dev/null 2>&1
-        yum install -y -q wget curl tar tzdata sqlite3 > /dev/null 2>&1
+        yum install -y -q wget curl tar tzdata jq xxd > /dev/null 2>&1
         ;;
     fedora | amzn | virtuozzo)
         dnf -y update > /dev/null 2>&1
-        dnf install -y -q wget curl tar tzdata sqlite3 > /dev/null 2>&1
+        dnf install -y -q wget curl tar tzdata jq xxd > /dev/null 2>&1
         ;;
     arch | manjaro | parch)
         pacman -Syu --noconfirm > /dev/null 2>&1
-        pacman -S --noconfirm wget curl tar tzdata sqlite3 > /dev/null 2>&1
+        pacman -S --noconfirm wget curl tar tzdata jq xxd > /dev/null 2>&1
         ;;
     opensuse-tumbleweed)
         zypper refresh > /dev/null 2>&1
-        zypper install -y wget curl tar timezone sqlite3 > /dev/null 2>&1
+        zypper install -y wget curl tar timezone jq xxd > /dev/null 2>&1
         ;;
     *)
         apt-get update > /dev/null 2>&1
-        apt-get install -y wget curl tar tzdata sqlite3 jq > /dev/null 2>&1
+        apt-get install -y wget curl tar tzdata jq xxd > /dev/null 2>&1
         ;;
 esac
 
@@ -157,8 +157,8 @@ systemctl start x-ui >>"$LOG_FILE" 2>&1
 
 # Генерация Reality ключей
 KEYS=$(/usr/local/x-ui/bin/xray-linux-${ARCH} x25519)
-PRIVATE_KEY=$(echo "$KEYS" | grep "Private" | awk '{print $3}')
-PUBLIC_KEY=$(echo "$KEYS" | grep "Public" | awk '{print $3}')
+PRIVATE_KEY=$(echo "$KEYS" | grep -i "Private" | sed -E 's/.*key:\s*//')
+PUBLIC_KEY=$(echo "$KEYS" | grep -i "Public" | sed -E 's/.*key:\s*//')
 SHORT_ID=$(head -c 8 /dev/urandom | xxd -p)
 UUID=$(cat /proc/sys/kernel/random/uuid)
 EMAIL=$(tr -dc 'a-z0-9' </dev/urandom | head -c 8)
