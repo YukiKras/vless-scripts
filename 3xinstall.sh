@@ -217,7 +217,7 @@ SETTINGS_JSON=$(jq -nc --arg uuid "$UUID" --arg email "$EMAIL" '{
   decryption: "none"
 }')
 
-STREAM_SETTINGS_JSON=$(jq -nc --arg pk "$PRIVATE_KEY" --arg sid "$SHORT_ID" --arg dest "${BEST_DOMAIN}:443" --arg sni "$BEST_DOMAIN" '{
+STREAM_SETTINGS_JSON=$(jq -nc --arg pbk "$PUBLIC_KEY" --arg prk "$PRIVATE_KEY" --arg sid "$SHORT_ID" --arg dest "${BEST_DOMAIN}:443" --arg sni "$BEST_DOMAIN" '{
   network: "tcp",
   security: "reality",
   realitySettings: {
@@ -225,7 +225,8 @@ STREAM_SETTINGS_JSON=$(jq -nc --arg pk "$PRIVATE_KEY" --arg sid "$SHORT_ID" --ar
     dest: $dest,
     xver: 0,
     serverNames: [$sni],
-    privateKey: $pk,
+    privateKey: $prk,
+    publicKey: $pbk,
     shortIds: [$sid]
   }
 }')
