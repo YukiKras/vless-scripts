@@ -226,7 +226,7 @@ STREAM_SETTINGS_JSON=$(jq -nc --arg pbk "$PUBLIC_KEY" --arg prk "$PRIVATE_KEY" -
     xver: 0,
     serverNames: [$sni],
     privateKey: $prk,
-    publicKey: $pbk,
+    settings: {publicKey: $pbk},
     shortIds: [$sid]
   }
 }')
