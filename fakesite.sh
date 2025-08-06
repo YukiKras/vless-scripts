@@ -17,7 +17,7 @@ read -p "Введите внутренний SNI Self порт (Enter для п�
 SPORT=${SPORT:-9000}
 
 # Получение внешнего IP сервера
-external_ip=$(curl -s ifconfig.me)
+external_ip=$(curl -s --max-time 3 https://api.ipify.org)
 
 # Проверка, что curl успешно получил IP
 if [[ -z "$external_ip" ]]; then
