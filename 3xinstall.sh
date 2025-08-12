@@ -19,6 +19,7 @@ if command -v x-ui &> /dev/null; then
     rm -rf /usr/local/x-ui /etc/x-ui /usr/bin/x-ui /etc/systemd/system/x-ui.service
     systemctl daemon-reexec
     systemctl daemon-reload
+    rm /root/3x-ui.txt
     echo "x-ui успешно удалена. Продолжаем выполнение скрипта..."
 fi
 
@@ -105,27 +106,27 @@ fi
 case "${release}" in
     ubuntu | debian | armbian)
         apt-get update > /dev/null 2>&1
-        apt-get install -y -q wget curl tar tzdata jq xxd > /dev/null 2>&1
+        apt-get install -y -q wget curl tar tzdata jq xxd qrencode > /dev/null 2>&1
         ;;
     centos | rhel | almalinux | rocky | ol)
         yum -y update > /dev/null 2>&1
-        yum install -y -q wget curl tar tzdata jq xxd > /dev/null 2>&1
+        yum install -y -q wget curl tar tzdata jq xxd qrencode > /dev/null 2>&1
         ;;
     fedora | amzn | virtuozzo)
         dnf -y update > /dev/null 2>&1
-        dnf install -y -q wget curl tar tzdata jq xxd > /dev/null 2>&1
+        dnf install -y -q wget curl tar tzdata jq xxd qrencode > /dev/null 2>&1
         ;;
     arch | manjaro | parch)
         pacman -Syu --noconfirm > /dev/null 2>&1
-        pacman -S --noconfirm wget curl tar tzdata jq xxd > /dev/null 2>&1
+        pacman -S --noconfirm wget curl tar tzdata jq xxd qrencode > /dev/null 2>&1
         ;;
     opensuse-tumbleweed)
         zypper refresh > /dev/null 2>&1
-        zypper install -y wget curl tar timezone jq xxd > /dev/null 2>&1
+        zypper install -y wget curl tar timezone jq xxd qrencode > /dev/null 2>&1
         ;;
     *)
         apt-get update > /dev/null 2>&1
-        apt-get install -y wget curl tar tzdata jq xxd > /dev/null 2>&1
+        apt-get install -y wget curl tar tzdata jq xxd qrencode > /dev/null 2>&1
         ;;
 esac
 
@@ -273,7 +274,11 @@ if echo "$ADD_RESULT" | grep -q '"success":true'; then
     echo -e ""
     echo -e "${VLESS_LINK}" >&3
     echo -e ""
-    echo -e "С инструкцией по созданию дополнительных Vless ключей вы можете ознакомиться тут: https://wiki.yukikras.net/ru/razvertyvanie-proksi-protokola-vless-s-pomoshyu-3x-ui#%D0%BA%D0%B0%D0%BA-%D0%B4%D0%BE%D0%B1%D0%B0%D0%B2%D0%BB%D1%8F%D1%82%D1%8C-%D0%BD%D0%BE%D0%B2%D1%8B%D1%85-%D0%BA%D0%BB%D0%B8%D0%B5%D0%BD%D1%82%D0%BE%D0%B2"
+    echo -e "QR код с Vless ключом, вы сможете отсканировать его с телефона в Happ"
+    echo -e ""
+    qrencode -t ANSIUTF8 "$VLESS_LINK"
+    echo -e ""
+    echo -e "С инструкцией по созданию дополнительных Vless ключей вы можете ознакомиться тут: https://wiki.yukikras.net/ru/razvertyvanie-proksi-protokola-vless-s-pomoshyu-3x-ui#как-добавлять-новых-клиентов"
     echo -e ""
 
     {
@@ -281,7 +286,11 @@ if echo "$ADD_RESULT" | grep -q '"success":true'; then
     echo ""
     echo "$VLESS_LINK"
     echo ""
-    echo "С инструкцией по созданию дополнительных Vless ключей вы можете ознакомиться тут: https://wiki.yukikras.net/ru/razvertyvanie-proksi-protokola-vless-s-pomoshyu-3x-ui#%D0%BA%D0%B0%D0%BA-%D0%B4%D0%BE%D0%B1%D0%B0%D0%B2%D0%BB%D1%8F%D1%82%D1%8C-%D0%BD%D0%BE%D0%B2%D1%8B%D1%85-%D0%BA%D0%BB%D0%B8%D0%B5%D0%BD%D1%82%D0%BE%D0%B2"
+    echo "QR код с Vless ключом, вы сможете отсканировать его с телефона в Happ"
+    echo ""
+    qrencode -t ANSIUTF8 "$VLESS_LINK"
+    echo ""
+    echo "С инструкцией по созданию дополнительных Vless ключей вы можете ознакомиться тут: https://wiki.yukikras.net/ru/razvertyvanie-proksi-protokola-vless-s-pomoshyu-3x-ui#как-добавлять-новых-клиентов"
     echo ""
     } >> /root/3x-ui.txt
 else
