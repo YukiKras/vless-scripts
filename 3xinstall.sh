@@ -267,7 +267,7 @@ if echo "$ADD_RESULT" | grep -q '"success":true'; then
     systemctl restart x-ui >>"$LOG_FILE" 2>&1
 
     SERVER_IP=$(curl -s --max-time 3 https://api.ipify.org || curl -s --max-time 3 https://4.ident.me)
-    VLESS_LINK="vless://${UUID}@${SERVER_IP}:443?type=tcp&security=reality&encryption=none&flow=xtls-rprx-vision&sni=teamdocs.su&fp=chrome&pbk=${PUBLIC_KEY}&sid=${SHORT_ID}&spx=%2F#${EMAIL}"
+    VLESS_LINK="vless://${UUID}@${SERVER_IP}:443?type=tcp&security=reality&encryption=none&flow=xtls-rprx-vision&sni=${BEST_DOMAIN}&fp=chrome&pbk=${PUBLIC_KEY}&sid=${SHORT_ID}&spx=%2F#${EMAIL}"
 
     echo -e "\n\033[0;32mVLESS Reality успешно создан!\033[0m" >&3
     echo -e "\033[1;36mВаш VPN ключ, его можно использовать сразу на нескольких устройствах:\033[0m" >&3
