@@ -255,6 +255,7 @@ ADD_RESULT=$(curl -s -b "$COOKIE_JAR" -X POST "http://127.0.0.1:${PORT}/${WEBPAT
       sniffing: ($sniffing | tostring)
     }')"
 )
+curl -s -b "$COOKIE_JAR" -X POST "http://127.0.0.1:${PORT}/${WEBPATH}/panel/inbound/onlines"
 
 # Очистка временных cookie
 rm -f "$COOKIE_JAR"
