@@ -212,7 +212,8 @@ SETTINGS_JSON=$(jq -nc --arg uuid "$UUID" --arg email "$EMAIL" '{
     {
       id: $uuid,
       flow: "xtls-rprx-vision",
-      email: $email
+      email: $email,
+      enable: true
     }
   ],
   decryption: "none"
@@ -247,7 +248,7 @@ ADD_RESULT=$(curl -s -b "$COOKIE_JAR" -X POST "http://127.0.0.1:${PORT}/${WEBPAT
     '{
       enable: true,
       remark: "reality443-auto",
-      listen: "0.0.0.0",
+      listen: "",
       port: 443,
       protocol: "vless",
       settings: ($settings | tostring),
@@ -255,8 +256,6 @@ ADD_RESULT=$(curl -s -b "$COOKIE_JAR" -X POST "http://127.0.0.1:${PORT}/${WEBPAT
       sniffing: ($sniffing | tostring)
     }')"
 )
-curl -s -b "$COOKIE_JAR" -X POST "http://127.0.0.1:${PORT}/${WEBPATH}/panel/inbound/onlines"
-
 # Очистка временных cookie
 rm -f "$COOKIE_JAR"
 
