@@ -158,8 +158,8 @@ systemctl start x-ui >>"$LOG_FILE" 2>&1
 
 # Генерация Reality ключей
 KEYS=$(/usr/local/x-ui/bin/xray-linux-${ARCH} x25519)
-PRIVATE_KEY=$(echo "$KEYS" | grep -i "Private" | sed -E 's/.*key:\s*//')
-PUBLIC_KEY=$(echo "$KEYS" | grep -i "Public" | sed -E 's/.*key:\s*//')
+PRIVATE_KEY=$(echo "$KEYS" | grep -i "Private" | sed -E 's/.*Key:\s*//')
+PUBLIC_KEY=$(echo "$KEYS" | grep -i "Password" | sed -E 's/.*Password:\s*//')
 SHORT_ID=$(head -c 8 /dev/urandom | xxd -p)
 UUID=$(cat /proc/sys/kernel/random/uuid)
 EMAIL=$(tr -dc 'a-z0-9' </dev/urandom | head -c 8)
@@ -212,7 +212,8 @@ SETTINGS_JSON=$(jq -nc --arg uuid "$UUID" --arg email "$EMAIL" '{
     {
       id: $uuid,
       flow: "xtls-rprx-vision",
-      email: $email
+      email: $email,
+      enable: true
     }
   ],
   decryption: "none"
@@ -247,7 +248,7 @@ ADD_RESULT=$(curl -s -b "$COOKIE_JAR" -X POST "http://127.0.0.1:${PORT}/${WEBPAT
     '{
       enable: true,
       remark: "reality443-auto",
-      listen: "0.0.0.0",
+      listen: "",
       port: 443,
       protocol: "vless",
       settings: ($settings | tostring),
@@ -255,7 +256,6 @@ ADD_RESULT=$(curl -s -b "$COOKIE_JAR" -X POST "http://127.0.0.1:${PORT}/${WEBPAT
       sniffing: ($sniffing | tostring)
     }')"
 )
-
 # Очистка временных cookie
 rm -f "$COOKIE_JAR"
 
