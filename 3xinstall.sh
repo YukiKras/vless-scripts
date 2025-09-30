@@ -93,15 +93,6 @@ arch() {
 }
 ARCH=$(arch)
 
-# Проверка GLIBC
-glibc_version=$(ldd --version | head -n1 | awk '{print $NF}')
-required_version="2.32"
-if [[ "$(printf '%s\n' "$required_version" "$glibc_version" | sort -V | head -n1)" != "$required_version" ]]; then
-    echo -e "${red}GLIBC слишком старая ($glibc_version), требуется >= 2.32.${plain}" >&3
-    echo -e "${red}Вам необходимо установить более свежую ОС">&3
-    exit 1
-fi
-
 # Установка зависимостей
 case "${release}" in
     ubuntu | debian | armbian)
