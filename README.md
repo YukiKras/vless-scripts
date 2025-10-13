@@ -44,6 +44,18 @@ bash <(curl -Ls https://raw.githubusercontent.com/YukiKras/vless-scripts/refs/he
 bash <(curl -Ls https://raw.githubusercontent.com/YukiKras/vless-scripts/refs/heads/main/fakesite.sh)
 ```
 
+## Аргументы
+### Настройка своего внутреннего порта в nginx
+``` bash
+bash <(curl -Ls https://raw.githubusercontent.com/YukiKras/vless-scripts/refs/heads/main/fakesite.sh) --port 9443
+```
+
+### Настройка Nginx без http на 80 порту
+
+``` bash
+bash <(curl -Ls https://raw.githubusercontent.com/YukiKras/vless-scripts/refs/heads/main/fakesite.sh) --without-80
+```
+
 # Возвращение https в Marzban
 
 Возвращает возможность пользоваться Marzban из вне как раньше без SSH туннеля, и позволяет опционаольно установить заглушку логина ISPManager.
