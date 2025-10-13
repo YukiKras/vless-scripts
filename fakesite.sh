@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Проверка аргументов
+WITHOUT_80=0
+for arg in "$@"; do
+    if [[ "$arg" == "--without-80" ]]; then
+        WITHOUT_80=1
+    fi
+done
+
 # Проверка системы
 if ! grep -E -q "^(ID=debian|ID=ubuntu)" /etc/os-release; then
     echo "Скрипт поддерживает только Debian или Ubuntu. Завершаю работу."
@@ -54,11 +62,15 @@ else
     echo "Порт 443 свободен."
 fi
 
-if ss -tuln | grep -q ":80 "; then
-    echo "Порт 80 занят, пожалуйста освободите порт, подробнее что делать вы можете ознакомиться тут: https://wiki.yukikras.net/ru/selfsni"
-    exit 1
+if [[ $WITHOUT_80 -eq 0 ]]; then
+    if ss -tuln | grep -q ":80 "; then
+        echo "Порт 80 занят, пожалуйста освободите порт, подробнее что делать вы можете ознакомиться тут: https://wiki.yukikras.net/ru/selfsni#порт-44380-занят-пожалуйста-освободите-порт"
+        exit 1
+    else
+        echo "Порт 80 свободен."
+    fi
 else
-    echo "Порт 80 свободен."
+    echo "Пропускаем настройку порта 80 (--without-80). Порт 80 останется свободен."
 fi
 
 # Установка nginx и certbot
@@ -73,11 +85,21 @@ SITE_DIR=$(find "$TEMP_DIR" -mindepth 1 -maxdepth 1 -type d | shuf -n 1)
 cp -r "$SITE_DIR"/* /var/www/html/
 
 # Выпуск сертификата
-certbot --nginx -d "$DOMAIN" --agree-tos -m "admin@$DOMAIN" --non-interactive
+if [[ $WITHOUT_80 -eq 1 ]]; then
+    echo "Выпускаем сертификат с помощью TLS-ALPN-01 (порт 443), порт 80 не используется..."
+    certbot certonly --nginx -d "$DOMAIN" --agree-tos -m "admin@$DOMAIN" --non-interactive --preferred-challenges tls-alpn-01
+else
+    echo "Выпускаем сертификат обычным способом через HTTP-01..."
+    certbot --nginx -d "$DOMAIN" --agree-tos -m "admin@$DOMAIN" --non-interactive
+fi
 
 # Настройка конфигурации Nginx
 cat > /etc/nginx/sites-enabled/sni.conf <<EOF
 server {
+EOF
+
+if [[ $WITHOUT_80 -eq 0 ]]; then
+cat >> /etc/nginx/sites-enabled/sni.conf <<EOF
     listen 80;
     server_name $DOMAIN;
 
@@ -86,6 +108,10 @@ server {
     }
 
     return 404;
+EOF
+fi
+
+cat >> /etc/nginx/sites-enabled/sni.conf <<EOF
 }
 
 server {
