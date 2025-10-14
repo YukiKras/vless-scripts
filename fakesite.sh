@@ -134,7 +134,7 @@ cat >> /etc/nginx/sites-enabled/sni.conf <<EOF
 }
 
 server {
-    listen 127.0.0.1:$SPORT ssl http2;
+    listen 127.0.0.1:$SPORT ssl http2 proxy_protocol;
 
     server_name $DOMAIN;
 
