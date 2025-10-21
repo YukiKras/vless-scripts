@@ -48,7 +48,7 @@ if [[ "$1" == "--extend" ]]; then
         echo -e "${yellow}Установка SelfSNI пропущена.${plain}" >&3
     fi
 else
-    PORT=8080
+    PORT=80
     echo -e "${yellow}Порт панели не указан, используется по умолчанию: ${PORT}${plain}" >&3
 fi
 
@@ -156,7 +156,7 @@ UUID=$(cat /proc/sys/kernel/random/uuid)
 EMAIL=$(tr -dc 'a-z0-9' </dev/urandom | head -c 8)
 
 # === Выбор SNI и DEST с наименьшим пингом ===
-DOMAINS=("teamdocs.su" "wikiportal.su" "docscenter.su")
+DOMAINS=("web.max.ru")
 BEST_DOMAIN=""
 BEST_PING=9999
 
@@ -177,8 +177,8 @@ for domain in "${DOMAINS[@]}"; do
 done
 
 if [[ -z "$BEST_DOMAIN" ]]; then
-    echo -e "${red}Не удалось определить доступный домен. Используем teamdocs.su по умолчанию.${plain}" >&3
-    BEST_DOMAIN="teamdocs.su"
+    echo -e "${red}Не удалось определить доступный домен. Используем web.max.ru по умолчанию.${plain}" >&3
+    BEST_DOMAIN="web.max.ru"
 fi
 
 echo -e "${green}Выбран домен с наименьшим пингом: ${BEST_DOMAIN}${plain}" >&3
