@@ -48,7 +48,7 @@ if [[ "$1" == "--extend" ]]; then
         echo -e "${yellow}Установка SelfSNI пропущена.${plain}" >&3
     fi
 else
-    PORT=80
+    PORT=8080
     echo -e "${yellow}Порт панели не указан, используется по умолчанию: ${PORT}${plain}" >&3
 fi
 
