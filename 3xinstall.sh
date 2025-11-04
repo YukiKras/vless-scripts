@@ -271,6 +271,7 @@ if echo "$ADD_RESULT" | grep -q '"success":true'; then
     echo -e ""
     echo -e "С инструкцией по созданию дополнительных Vless ключей вы можете ознакомиться тут: https://wiki.yukikras.net/ru/razvertyvanie-proksi-protokola-vless-s-pomoshyu-3x-ui#как-добавлять-новых-клиентов"
     echo -e ""
+    echo -e "Если у вас не открывается 3x-ui панель, попробуйте, пожалуйста её открыть следуя этой инструкции: https://github.com/YukiKras/wiki/blob/main/ssh-tunnels.md"
 
     {
     echo "Ваш VPN ключ, его можно использовать сразу на нескольких устройствах:"
@@ -283,6 +284,7 @@ if echo "$ADD_RESULT" | grep -q '"success":true'; then
     echo ""
     echo "С инструкцией по созданию дополнительных Vless ключей вы можете ознакомиться тут: https://wiki.yukikras.net/ru/razvertyvanie-proksi-protokola-vless-s-pomoshyu-3x-ui#как-добавлять-новых-клиентов"
     echo ""
+    echo -e "Если у вас не открывается 3x-ui панель, попробуйте, пожалуйста её открыть следуя этой инструкции: https://github.com/YukiKras/wiki/blob/main/ssh-tunnels.md"
     } >> /root/3x-ui.txt
 else
     echo -e "${red}Ошибка при добавлении инбаунда через API:${plain}" >&3

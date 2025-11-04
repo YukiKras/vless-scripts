@@ -2,9 +2,9 @@
 
 echo "Скрипт начал свою работу, пожалуйста до окончанию его работы не закрывайте терминал..."
 
-# Проверка, свободен ли порт 80
-if lsof -iTCP:80 -sTCP:LISTEN -t >/dev/null ; then
-  echo "Порт 80 уже занят. Скрипт завершён."
+# Проверка, свободен ли порт 8080
+if lsof -iTCP:8080 -sTCP:LISTEN -t >/dev/null ; then
+  echo "Порт 8080 уже занят. Скрипт завершён."
   exit 1
 fi
 
@@ -12,8 +12,8 @@ fi
 if command -v ufw >/dev/null 2>&1; then
   UFW_STATUS=$(ufw status | grep -i "Status: active")
   if [[ -n "$UFW_STATUS" ]]; then
-    echo "UFW активен. Добавляем правило для порта 80..."
-    ufw allow 80/tcp >/dev/null
+    echo "UFW активен. Добавляем правило для порта 8080..."
+    ufw allow 8080/tcp >/dev/null
     ufw allow 443/tcp >/dev/null
     ufw allow 8443/tcp >/dev/null
     echo "Перезапуск UFW..."
@@ -30,7 +30,7 @@ fi
   sleep 1
   echo 9         # Change panel port
   sleep 1
-  echo 80      # New port
+  echo 8080      # New port
   sleep 1
   echo y         # Confirm
   sleep 1
@@ -53,6 +53,8 @@ echo "Панель x-ui теперь доступна по следующей с
 echo "$ACCESS_URL"
 echo
 echo "Используйте предыдущие логин и пароль для входа."
+echo
+echo "Если у вас не открывается 3x-ui панель, попробуйте, пожалуйста её открыть следуя этой инструкции: https://github.com/YukiKras/wiki/blob/main/ssh-tunnels.md"
 
 # Обновление ссылки в /root/3x-ui.txt при наличии файла
 if [[ -f /root/3x-ui.txt ]]; then

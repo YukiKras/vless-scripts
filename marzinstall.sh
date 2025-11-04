@@ -23,7 +23,7 @@ SERVER_IP=$(hostname -I | awk '{print $1}')
 OUTPUT_FILE="/root/marzban.txt"
 
 # Выбор оптимального домена (SNI)
-DOMAINS=("teamdocs.su" "wikiportal.su" "docscenter.su")
+DOMAINS=("web.max.ru")
 BEST_DOMAIN=""
 BEST_PING=9999
 
@@ -40,7 +40,7 @@ for domain in "${DOMAINS[@]}"; do
     fi
 done
 
-[[ -z "$BEST_DOMAIN" ]] && BEST_DOMAIN="teamdocs.su"
+[[ -z "$BEST_DOMAIN" ]] && BEST_DOMAIN="web.max.ru"
 REALITY_DOMAIN=$BEST_DOMAIN
 REALITY_DEST="${REALITY_DOMAIN}:443"
 echo "Выбран домен: $REALITY_DOMAIN"
@@ -189,8 +189,6 @@ if echo "$API_USERS_RESULT" | grep -q '"users":'; then
           echo "To access the web panel, we recommend creating an SSH tunnel from your device to the server by executing the following command in your terminal:"
           echo "ssh -L 8000:localhost:8000 root@$SERVER_IP"
           echo "When connecting, enter the root password of the server, and after the SSH connection is established, the panel will be accessible in your browser at the above URL."
-          echo "For more detailed instructions on how to access the panel, refer to the guide:"
-          echo "https://wiki.aeza.net/razvertyvanie-proksi-protokola-vless-s-pomoshyu-marzban#id-2.-poluchenie-dannykh-dlya-vkhoda-v-marzban"
           echo ""
           echo "RUS:"
           echo "Панель управления Marzban (https://github.com/Gozargah/Marzban) доступна по следующим данным:"
